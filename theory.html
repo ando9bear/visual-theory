@@ -33,6 +33,19 @@
         body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #94a3b8; }
         body.dark-mode footer { background-color: #334155; color: #94a3b8; }
 
+        /* Fix for "Designing for Everyone" title in dark mode */
+        body.dark-mode #hero h2 { color: #f8fafc; }
+
+        /* Styles for Photophobia Demo Box comfort modes */
+        #photophobiaDemoBox.comfort-mode-light { background-color: #ffffff; color: #000000; }
+        body.dark-mode #photophobiaDemoBox.comfort-mode-light { background-color: #1e293b; color: #cbd5e1; }
+
+        #photophobiaDemoBox.comfort-mode-soft { background-color: #e2e8f0; color: #475569; } /* Adjusted for better contrast in light mode */
+        body.dark-mode #photophobiaDemoBox.comfort-mode-soft { background-color: #334155; color: #f8fafc; }
+
+        #photophobiaDemoBox.comfort-mode-dark { background-color: #1a202c; color: #e2e8f0; } /* Adjusted for better contrast in light mode */
+        body.dark-mode #photophobiaDemoBox.comfort-mode-dark { background-color: #0f172a; color: #cbd5e1; }
+
 
         .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 300px; max-height: 40vh; }
         @media (min-width: 768px) { .chart-container { height: 350px; } }
@@ -286,7 +299,7 @@
                     document.getElementById('comfortBtnLight').addEventListener('click', () => this.setComfortMode('light'));
                     document.getElementById('comfortBtnSoft').addEventListener('click', () => this.setComfortMode('soft'));
                     document.getElementById('comfortBtnDark').addEventListener('click', () => this.setComfortMode('dark'));
-                    this.setComfortMode('light');
+                    this.setComfortMode('light'); // Set initial comfort mode
 
                     document.getElementById('chartToggle').addEventListener('click', (e) => this.renderAccessibleChart(e.currentTarget.classList.toggle('active')));
                     
@@ -346,14 +359,10 @@
 
                 setComfortMode(mode) {
                     const box = document.getElementById('photophobiaDemoBox');
-                    box.classList.remove('bg-white', 'text-black', 'bg-stone-200', 'text-stone-800', 'bg-slate-800', 'text-slate-200');
-                    if (mode === 'light') {
-                        box.classList.add('bg-white', 'text-black');
-                    } else if (mode === 'soft') {
-                        box.classList.add('bg-stone-200', 'text-stone-800');
-                    } else if (mode === 'dark') {
-                        box.classList.add('bg-slate-800', 'text-slate-200');
-                    }
+                    // Remove all existing comfort mode classes first
+                    box.classList.remove('comfort-mode-light', 'comfort-mode-soft', 'comfort-mode-dark');
+                    // Add the new comfort mode class
+                    box.classList.add(`comfort-mode-${mode}`);
                 },
 
                 renderAccessibleChart(isAccessible) {
