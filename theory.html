@@ -1,0 +1,764 @@
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Inclusive Design: An Interactive Guide to Accessible Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f5f5f4; color: #44403c; transition: background-color 0.3s, color 0.3s; }
+        body.dark-mode { background-color: #1e293b; color: #cbd5e1; } /* Dark mode styles */
+        body.dark-mode .section-title { color: #f8fafc; }
+        body.dark-mode .section-subtitle { color: #94a3b8; }
+        body.dark-mode .card { background-color: #334155; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3); }
+        body.dark-mode .card:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -2px rgb(0 0 0 / 0.3); }
+        body.dark-mode .text-stone-800 { color: #f8fafc; }
+        body.dark-mode .text-stone-600 { color: #e2e8f0; }
+        body.dark-mode .bg-white { background-color: #1e293b; }
+        body.dark-mode .bg-stone-100 { background-color: #334155; }
+        body.dark-mode .border { border-color: #475569; }
+        body.dark-mode .toggle-switch { background-color: #475569; }
+        body.dark-mode .toggle-switch.active { background-color: #60a5fa; } /* Adjusted active toggle for dark mode */
+        body.dark-mode .btn-secondary { background-color: #475569; color: #e2e8f0; }
+        body.dark-mode .btn-secondary:hover { background-color: #64748b; }
+        body.dark-mode .bg-blue-50 { background-color: #1e3a8a; } /* Dark mode specific for blue info box */
+        body.dark-mode .text-blue-800 { color: #93c5fd; } /* Dark mode specific for blue info box text */
+        body.dark-mode .bg-stone-50 { background-color: #334155; } /* Dark mode for AI tool output */
+        body.dark-mode .border-stone-200 { border-color: #475569; } /* Dark mode for AI tool output border */
+        body.dark-mode .text-stone-700 { color: #cbd5e1; } /* Adjust text in AI tool forms */
+        body.dark-mode input, body.dark-mode textarea, body.dark-mode select { background-color: #475569; color: #cbd5e1; border-color: #64748b; }
+        body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #94a3b8; }
+        body.dark-mode footer { background-color: #334155; color: #94a3b8; }
+
+
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 300px; max-height: 40vh; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .glassmorphism { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.18); }
+        .active-nav { color: #2563eb; font-weight: 600; }
+        .section-title { font-size: 1.875rem; font-weight: 700; color: #1c1917; text-align: center; margin-bottom: 1rem; }
+        .section-subtitle { font-size: 1.125rem; color: #57534e; text-align: center; max-width: 48rem; margin: 0 auto 3rem; }
+        .card { background-color: #ffffff; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1); }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: background-color 0.2s, transform 0.2s; }
+        .btn-primary { background-color: #2563eb; color: #ffffff; }
+        .btn-primary:hover { background-color: #1d4ed8; transform: scale(1.05); }
+        .btn-secondary { background-color: #e5e7eb; color: #374151; }
+        .btn-secondary:hover { background-color: #d1d5db; }
+        .toggle-switch { width: 4rem; height: 2rem; background-color: #d1d5db; border-radius: 9999px; position: relative; cursor: pointer; transition: background-color 0.2s ease-in-out; }
+        .toggle-switch-dot { width: 1.75rem; height: 1.75rem; background-color: white; border-radius: 9999px; position: absolute; top: 0.125rem; left: 0.125rem; transition: transform 0.2s ease-in-out; }
+        .toggle-switch.active { background-color: #2563eb; }
+        .toggle-switch.active .toggle-switch-dot { transform: translateX(2rem); }
+        .flash-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.1s ease-out; }
+        .flash-overlay.active { opacity: 1; }
+        .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-left: 8px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="flashOverlay" class="flash-overlay"></div>
+
+    <header class="bg-stone-800 text-white p-4 sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">The Inclusive Design</h1>
+            <ul class="hidden md:flex space-x-6 items-center"> <!-- Added items-center for vertical alignment -->
+                <li><a href="#conditions" class="hover:text-blue-300">The Conditions</a></li>
+                <li><a href="#solutions" class="hover:text-blue-300">Design Solutions</a></li>
+                <li><a href="#casestudies" class="hover:text-blue-300">Case Studies</a></li>
+                <li><a href="#simulators" class="hover:text-blue-300">Simulators</a></li>
+                <li><a href="#aitools" class="hover:text-blue-300">AI-Powered Tools</a></li>
+                <li class="ml-4">
+                    <button id="darkModeToggle" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200 flex items-center">
+                        <span id="darkModeIcon" class="mr-2">💡</span> <!-- Lightbulb icon -->
+                        <span id="darkModeText">Dark Mode</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="md:hidden">
+                <button id="mobileMenuButton" class="text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Menu Overlay -->
+        <div id="mobileMenu" class="hidden md:hidden fixed inset-0 bg-stone-900 bg-opacity-95 z-40 flex flex-col items-center justify-center space-y-8">
+            <button id="closeMobileMenu" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
+            <ul class="text-white text-2xl space-y-6">
+                <li><a href="#conditions" class="hover:text-blue-300" data-close-menu>The Conditions</a></li>
+                <li><a href="#solutions" class="hover:text-blue-300" data-close-menu>Design Solutions</a></li>
+                <li><a href="#casestudies" class="hover:text-blue-300" data-close-menu>Case Studies</a></li>
+                <li><a href="#simulators" class="hover:text-blue-300" data-close-menu>Simulators</a></li>
+                <li><a href="#aitools" class="hover:text-blue-300" data-close-menu>AI-Powered Tools</a></li>
+                 <li>
+                    <button id="darkModeToggleMobile" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200 flex items-center mt-4">
+                        <span id="darkModeIconMobile" class="mr-2">💡</span> <!-- Lightbulb icon -->
+                        <span id="darkModeTextMobile">Dark Mode</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="hero" class="text-center py-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-stone-900 mb-4">Designing for Everyone</h2>
+            <p class="text-lg text-stone-600 max-w-3xl mx-auto">An interactive exploration of how strategic graphic design can address visual impairments like photophobia and colour blindness to create more accessible digital experiences.</p>
+        </section>
+
+        <section id="conditions" class="py-16">
+            <h3 class="section-title">Understanding the Conditions</h3>
+            <p class="section-subtitle">Visual impairments are not edge cases; they affect a significant portion of the population. Understanding their impact is the first step towards inclusive design.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h4 class="text-2xl font-bold mb-3 text-stone-800">Photophobia</h4>
+                    <p class="text-stone-600 mb-4">An abnormal and often painful sensitivity to light. Bright screens, glare, and high-contrast visuals can cause discomfort, headaches, and eye strain, making digital interaction difficult.</p>
+                    <div class="flex items-center space-x-4">
+                        <span class="font-medium text-stone-700">Simulate Discomfort:</span>
+                        <div id="photophobiaToggle" class="toggle-switch">
+                            <div class="toggle-switch-dot"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 class="text-2xl font-bold mb-3 text-stone-800">Colour Blindness (CVD)</h4>
+                    <p class="text-stone-600 mb-4">A reduced ability to distinguish between certain colours. The most common form, red-green deficiency, affects approximately <span class="font-bold text-blue-600">1 in 12 men</span> and <span class="font-bold text-blue-600">1 in 200 women</span>.</p>
+                    <div class="mt-4 p-4 border-l-4 border-blue-500 bg-blue-50">
+                        <p class="text-blue-800">This makes relying solely on colour to convey information a major barrier to accessibility.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="py-16 bg-white rounded-xl shadow-lg">
+            <h3 class="section-title">Interactive Design Solutions</h3>
+            <p class="section-subtitle">Effective solutions involve giving users control and providing redundant information. Explore some key principles in action below.</p>
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <div>
+                    <h4 class="text-2xl font-bold mb-3 text-center text-stone-800">Solution for Photophobia: Visual Comfort</h4>
+                    <p class="text-stone-600 text-center mb-6">Providing alternatives to bright, high-contrast interfaces is critical. Test different comfort settings on the text below.</p>
+                    <div class="p-4 border rounded-lg bg-stone-100">
+                        <div class="flex justify-center space-x-2 mb-4">
+                            <button id="comfortBtnLight" class="btn btn-secondary text-sm">Bright</button>
+                            <button id="comfortBtnSoft" class="btn btn-secondary text-sm">Soft</button>
+                            <button id="comfortBtnDark" class="btn btn-secondary text-sm">Dark</button>
+                        </div>
+                        <div id="photophobiaDemoBox" class="p-6 rounded-md transition-colors duration-300">
+                            <h5 class="font-bold text-lg mb-2">Accessible Text</h5>
+                            <p class="text-sm">Strategic Dark Mode implementation reduces overall screen luminance. However, it requires nuance: designers should avoid pure black for backgrounds and pure white for text. Softer dark greys and off-white colours provide a gentler, more comfortable contrast while maintaining legibility for all users.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-2xl font-bold mb-3 text-center text-stone-800">Solution for Colour Blindness: Redundant Coding</h4>
+                     <p class="text-stone-600 text-center mb-6">Information conveyed by colour must also be available through other cues, like patterns or icons. Toggle to see the difference.</p>
+                    <div class="p-4 border rounded-lg bg-stone-100">
+                        <div class="flex items-center justify-center space-x-4 mb-4">
+                            <span class="font-medium text-stone-700">Inaccessible</span>
+                            <div id="chartToggle" class="toggle-switch">
+                                <div class="toggle-switch-dot"></div>
+                            </div>
+                            <span class="font-medium text-stone-700">Accessible</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="accessibleChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="casestudies" class="py-16">
+            <h3 class="section-title">Case Studies: Industry Leaders</h3>
+            <p class="section-subtitle">Tech giants like Apple and Google have integrated robust accessibility features, setting a standard for inclusive product design.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <div class="flex items-center mb-4">
+                        <span class="text-3xl mr-4"></span>
+                        <h4 class="text-2xl font-bold text-stone-800">Apple: Accommodating Photophobia</h4>
+                    </div>
+                    <p class="text-stone-600 mb-4">Apple's iOS and macOS offer a comprehensive suite of display accommodations. These features empower users to create a comfortable visual environment tailored to their needs.</p>
+                    <ul class="space-y-2 text-stone-700">
+                        <li class="flex items-start"><span class="mr-2 text-blue-500">✓</span> <strong>System-wide Dark Mode:</strong> Reduces overall screen brightness with carefully chosen soft dark tones.</li>
+                        <li class="flex items-start"><span class="mr-2 text-blue-500">✓</span> <strong>Reduce White Point:</strong> Diminishes the intensity of bright colours beyond standard settings.</li>
+                        <li class="flex items-start"><span class="mr-2 text-blue-500">✓</span> <strong>Night Shift & Colour Tint:</strong> Adjusts colour temperature and hue for personalized comfort.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                     <div class="flex items-center mb-4">
+                        <span class="text-2xl font-bold mr-4">G</span>
+                        <h4 class="text-2xl font-bold text-stone-800">Google: Designing for Colour Blindness</h4>
+                    </div>
+                    <p class="text-stone-600 mb-4">Through its Material Design guidelines, Google champions the principle of redundant coding to ensure interfaces are universally understandable.</p>
+                     <ul class="space-y-2 text-stone-700">
+                        <li class="flex items-start"><span class="mr-2 text-blue-500">✓</span> <strong>"Don't rely on colour alone":</strong> A core directive, advocating for icons and labels.</li>
+                        <li class="flex items-start"><span class="mr-2 text-blue-500">✓</span> <strong>High Contrast Ratios:</strong> Adherence to WCAG standards ensures legibility based on luminance.</li>
+                        <li class="flex items-start"><span class="mr-2 text-blue-500">✓</span> <strong>System-level Colour Correction:</strong> Android allows users to adjust display colours for different types of CVD.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="simulators" class="py-16 bg-stone-800 text-white rounded-xl shadow-lg">
+            <h3 class="section-title !text-white">Experience Accessibility Simulators</h3>
+            <p class="section-subtitle !text-stone-300">The best way to understand is to experience it. Use these tools to see how design choices impact users with different visual perceptions.</p>
+            <div class="text-center">
+                 <h4 class="text-2xl font-bold mb-3">Colour Blindness Simulator</h4>
+                 <p class="text-stone-400 mb-4">Select a type of colour vision deficiency to see how this chart appears.</p>
+                 <div class="max-w-xs mx-auto mb-6">
+                    <select id="cvdSelector" class="w-full p-2 rounded-md bg-stone-700 border border-stone-600 text-white">
+                        <option value="normal">Normal Vision</option>
+                        <option value="protanopia">Protanopia (No Red)</option>
+                        <option value="deuteranopia">Deuteranopia (No Green)</option>
+                        <option value="tritanopia">Tritanopia (No Blue)</option>
+                        <option value="achromatopsia">Achromatopsia (Grayscale)</option>
+                    </select>
+                 </div>
+                 <div class="chart-container">
+                    <canvas id="cvdChart"></canvas>
+                 </div>
+            </div>
+        </section>
+
+        <section id="aitools" class="py-16">
+            <h3 class="section-title">✨ AI-Powered Accessibility Tools ✨</h3>
+            <p class="section-subtitle">Leverage AI to assist with your accessible design efforts.</p>
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <div class="card">
+                    <h4 class="text-2xl font-bold mb-3 text-stone-800">Colour Palette Generator ✨</h4>
+                    <p class="text-stone-600 mb-4">Generate a colour-blind friendly palette based on a theme. Provide 5 HEX codes and a brief explanation.</p>
+                    <div class="mb-4">
+                        <label for="paletteTheme" class="block text-stone-700 text-sm font-bold mb-2">Theme/Mood:</label>
+                        <input type="text" id="paletteTheme" class="shadow appearance-none border rounded w-full py-2 px-3 text-stone-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., 'calm and professional'">
+                    </div>
+                    <button id="generatePaletteBtn" class="btn btn-primary w-full flex items-center justify-center">Generate Palette ✨<span id="paletteSpinner" class="loading-spinner hidden"></span></button>
+                    <div id="paletteOutput" class="mt-6 p-4 bg-stone-50 rounded-lg border border-stone-200 hidden">
+                        <h5 class="font-bold text-lg mb-2 text-stone-800">Generated Palette:</h5>
+                        <div id="colorSwatches" class="flex flex-wrap gap-2 mb-4"></div>
+                        <p id="paletteExplanation" class="text-sm text-stone-700"></p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 class="text-2xl font-bold mb-3 text-stone-800">Content Accessibility Suggester ✨</h4>
+                    <p class="text-stone-600 mb-4">Describe any content (text, chart, image) and get practical accessibility suggestions.</p>
+                    <div class="mb-4">
+                        <label for="contentDescription" class="block text-stone-700 text-sm font-bold mb-2">Describe your content:</label>
+                        <textarea id="contentDescription" class="shadow appearance-none border rounded w-full py-2 px-3 text-stone-700 leading-tight focus:outline-none focus:shadow-outline h-32" placeholder="e.g., 'A bar chart showing sales data for Q1 and Q2 with red and green bars.' or 'A website with a bright white background and small black text.'"></textarea>
+                    </div>
+                    <button id="suggestAccessibilityBtn" class="btn btn-primary w-full flex items-center justify-center">Get Suggestions ✨<span id="suggestionsSpinner" class="loading-spinner hidden"></span></button>
+                    <div id="suggestionsOutput" class="mt-6 p-4 bg-stone-50 rounded-lg border border-stone-200 hidden">
+                        <h5 class="font-bold text-lg mb-2 text-stone-800">Suggestions:</h5>
+                        <p id="suggestionText" class="text-sm text-stone-700 whitespace-pre-wrap"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 bg-stone-200">
+        <p class="text-stone-600">Inclusive design is kind design.</p>
+        <p class="text-sm text-stone-500 mt-2">Kind design is the best kind of design.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let accessibleChartInstance;
+            let cvdChartInstance;
+
+            const App = {
+                init() {
+                    this.setupEventListeners();
+                    this.renderAccessibleChart(false);
+                    this.renderCvdChart('normal');
+                    this.updateActiveNav();
+                    this.loadDarkModePreference(); // Load dark mode preference on init
+                },
+
+                setupEventListeners() {
+                    document.getElementById('photophobiaToggle').addEventListener('click', this.handlePhotophobiaToggle);
+                    
+                    document.getElementById('comfortBtnLight').addEventListener('click', () => this.setComfortMode('light'));
+                    document.getElementById('comfortBtnSoft').addEventListener('click', () => this.setComfortMode('soft'));
+                    document.getElementById('comfortBtnDark').addEventListener('click', () => this.setComfortMode('dark'));
+                    this.setComfortMode('light');
+
+                    document.getElementById('chartToggle').addEventListener('click', (e) => this.renderAccessibleChart(e.currentTarget.classList.toggle('active')));
+                    
+                    document.getElementById('cvdSelector').addEventListener('change', (e) => this.renderCvdChart(e.target.value));
+
+                    document.getElementById('generatePaletteBtn').addEventListener('click', this.generateColourPalette);
+                    document.getElementById('suggestAccessibilityBtn').addEventListener('click', this.suggestAccessibilityImprovements);
+
+                    // Dark Mode Toggle
+                    document.getElementById('darkModeToggle').addEventListener('click', this.toggleDarkMode.bind(this));
+                    document.getElementById('darkModeToggleMobile').addEventListener('click', this.toggleDarkMode.bind(this));
+
+
+                    document.querySelectorAll('nav a').forEach(anchor => {
+                        anchor.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                            // Close mobile menu if open
+                            if (document.getElementById('mobileMenu').classList.contains('flex')) {
+                                document.getElementById('mobileMenu').classList.remove('flex');
+                                document.getElementById('mobileMenu').classList.add('hidden');
+                            }
+                        });
+                    });
+
+                    window.addEventListener('scroll', this.updateActiveNav);
+
+                    // Mobile menu toggle
+                    document.getElementById('mobileMenuButton').addEventListener('click', () => {
+                        document.getElementById('mobileMenu').classList.remove('hidden');
+                        document.getElementById('mobileMenu').classList.add('flex');
+                    });
+
+                    document.getElementById('closeMobileMenu').addEventListener('click', () => {
+                        document.getElementById('mobileMenu').classList.remove('flex');
+                        document.getElementById('mobileMenu').classList.add('hidden');
+                    });
+                    // Close mobile menu when a link inside it is clicked
+                    document.querySelectorAll('#mobileMenu a[data-close-menu]').forEach(link => {
+                        link.addEventListener('click', () => {
+                            document.getElementById('mobileMenu').classList.remove('flex');
+                            document.getElementById('mobileMenu').classList.add('hidden');
+                        });
+                    });
+                },
+
+                handlePhotophobiaToggle(e) {
+                    const isActive = e.currentTarget.classList.toggle('active');
+                    const overlay = document.getElementById('flashOverlay');
+                    if (isActive) {
+                        overlay.classList.add('active');
+                        setTimeout(() => overlay.classList.remove('active'), 150);
+                    }
+                },
+
+                setComfortMode(mode) {
+                    const box = document.getElementById('photophobiaDemoBox');
+                    box.classList.remove('bg-white', 'text-black', 'bg-stone-200', 'text-stone-800', 'bg-slate-800', 'text-slate-200');
+                    if (mode === 'light') {
+                        box.classList.add('bg-white', 'text-black');
+                    } else if (mode === 'soft') {
+                        box.classList.add('bg-stone-200', 'text-stone-800');
+                    } else if (mode === 'dark') {
+                        box.classList.add('bg-slate-800', 'text-slate-200');
+                    }
+                },
+
+                renderAccessibleChart(isAccessible) {
+                    const ctx = document.getElementById('accessibleChart').getContext('2d');
+                    if (accessibleChartInstance) {
+                        accessibleChartInstance.destroy();
+                    }
+
+                    const createPattern = (color) => {
+                        const p = document.createElement("canvas");
+                        p.width = 10;
+                        p.height = 10;
+                        const pctx = p.getContext("2d");
+                        
+                        pctx.fillStyle = color;
+                        pctx.fillRect(0, 0, 10, 10);
+                        pctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                        pctx.beginPath();
+                        pctx.moveTo(0, 10);
+                        pctx.lineTo(10, 0);
+                        pctx.stroke();
+                        
+                        return ctx.createPattern(p, "repeat");
+                    };
+
+                    const accessibleData = {
+                        labels: ['Product A', 'Product B', 'Product C', 'Product D'],
+                        datasets: [{
+                            label: 'Sales 2023',
+                            data: [65, 59, 80, 81],
+                            backgroundColor: ['#1e40af', '#1e40af', '#065f46', '#065f46'],
+                            borderColor: ['#1e3a8a', '#1e3a8a', '#04422e', '#04422e'],
+                            borderWidth: 1
+                        }, {
+                            label: 'Sales 2024',
+                            data: [75, 69, 90, 91],
+                            backgroundColor: [createPattern('#3b82f6'), '#3b82f6', createPattern('#10b981'), '#10b981'],
+                             borderColor: ['#2563eb', '#2563eb', '#059669', '#059669'],
+                            borderWidth: 1
+                        }]
+                    };
+                    
+                    const inaccessibleData = {
+                        labels: ['Product A', 'Product B', 'Product C', 'Product D'],
+                        datasets: [{
+                            label: 'Sales 2023',
+                            data: [65, 59, 80, 81],
+                            backgroundColor: 'rgba(220, 38, 38, 0.8)',
+                            borderColor: 'rgba(185, 28, 28, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'Sales 2024',
+                            data: [75, 69, 90, 91],
+                            backgroundColor: 'rgba(22, 163, 74, 0.8)',
+                            borderColor: 'rgba(21, 128, 61, 1)',
+                            borderWidth: 1
+                        }]
+                    };
+                    
+                    accessibleChartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: isAccessible ? accessibleData : inaccessibleData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: document.body.classList.contains('dark-mode') ? '#cbd5e1' : '#44403c'
+                                    },
+                                    grid: {
+                                        color: document.body.classList.contains('dark-mode') ? '#475569' : '#e5e7eb'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: document.body.classList.contains('dark-mode') ? '#cbd5e1' : '#44403c'
+                                    },
+                                    grid: {
+                                        color: document.body.classList.contains('dark-mode') ? '#475569' : '#e5e7eb'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        color: document.body.classList.contains('dark-mode') ? '#cbd5e1' : '#44403c'
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: isAccessible ? 'Accessible Chart (Using Patterns & Safe Colours)' : 'Inaccessible Chart (Using Red/Green)',
+                                    color: document.body.classList.contains('dark-mode') ? '#f8fafc' : '#1c1917'
+                                }
+                            }
+                        }
+                    });
+                },
+
+                renderCvdChart(type) {
+                    const ctx = document.getElementById('cvdChart').getContext('2d');
+                    if (cvdChartInstance) {
+                        cvdChartInstance.destroy();
+                    }
+
+                    const originalColors = ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40'];
+                    const simulatedColors = this.simulateCvd(originalColors, type);
+                    
+                    cvdChartInstance = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Marketing', 'Sales', 'Development', 'Support', 'HR', 'Admin'],
+                            datasets: [{
+                                label: 'Department Budget',
+                                data: [300, 50, 100, 40, 20, 60],
+                                backgroundColor: simulatedColors,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: { color: '#f5f5f4' }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Simulated Budget Allocation',
+                                    color: '#f5f5f4'
+                                }
+                            }
+                        }
+                    });
+                },
+                
+                simulateCvd(colors, type) {
+                    return colors.map(hex => {
+                        const rgb = this.hexToRgb(hex);
+                        if (!rgb) return hex;
+                        
+                        let { r, g, b } = rgb;
+                        let r_new = r, g_new = g, b_new = b;
+
+                        switch(type) {
+                            case 'protanopia':
+                                r_new = 0.567 * r + 0.433 * g + 0 * b;
+                                g_new = 0.558 * r + 0.442 * g + 0 * b;
+                                b_new = 0 * r + 0.242 * g + 0.758 * b;
+                                break;
+                            case 'deuteranopia':
+                                r_new = 0.625 * r + 0.375 * g + 0 * b;
+                                g_new = 0.7 * r + 0.3 * g + 0 * b;
+                                b_new = 0 * r + 0.3 * g + 0.7 * b;
+                                break;
+                            case 'tritanopia':
+                                r_new = 0.95 * r + 0.05 * g + 0 * b;
+                                g_new = 0 * r + 0.433 * g + 0.567 * b;
+                                b_new = 0 * r + 0.475 * g + 0.525 * b;
+                                break;
+                            case 'achromatopsia':
+                                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                                r_new = g_new = b_new = gray;
+                                break;
+                            case 'normal':
+                            default:
+                                return hex;
+                        }
+
+                        return this.rgbToHex(Math.round(r_new), Math.round(g_new), Math.round(b_new));
+                    });
+                },
+
+                hexToRgb(hex) {
+                    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                    return result ? {
+                        r: parseInt(result[1], 16),
+                        g: parseInt(result[2], 16),
+                        b: parseInt(result[3], 16)
+                    } : null;
+                },
+
+                rgbToHex(r, g, b) {
+                    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0');
+                },
+                
+                updateActiveNav() {
+                    const sections = document.querySelectorAll('main section');
+                    const navLinks = document.querySelectorAll('nav a');
+                    let currentSection = '';
+
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        if (pageYOffset >= sectionTop - 100) {
+                            currentSection = section.getAttribute('id');
+                        }
+                    });
+
+                    navLinks.forEach(link => {
+                        link.classList.remove('active-nav');
+                        if (link.getAttribute('href').substring(1) === currentSection) {
+                            link.classList.add('active-nav');
+                        }
+                    });
+                },
+
+                toggleDarkMode() {
+                    document.body.classList.toggle('dark-mode');
+                    const isDarkMode = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('dark-mode', isDarkMode); // Save preference
+
+                    // Update button text and icon for both desktop and mobile
+                    const darkModeTextElements = [document.getElementById('darkModeText'), document.getElementById('darkModeTextMobile')];
+                    const darkModeIconElements = [document.getElementById('darkModeIcon'), document.getElementById('darkModeIconMobile')];
+
+                    darkModeTextElements.forEach(el => {
+                        if (el) el.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+                    });
+                    darkModeIconElements.forEach(el => {
+                        if (el) el.innerHTML = isDarkMode ? '☀️' : '💡'; // Sun for light mode, lightbulb for dark
+                    });
+
+                    // Re-render charts to update text/grid colours
+                    this.renderAccessibleChart(document.getElementById('chartToggle').classList.contains('active'));
+                    this.renderCvdChart(document.getElementById('cvdSelector').value);
+                },
+
+                loadDarkModePreference() {
+                    const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+                    if (isDarkMode) {
+                        document.body.classList.add('dark-mode');
+                        // Set initial button state for both desktop and mobile
+                        const darkModeTextElements = [document.getElementById('darkModeText'), document.getElementById('darkModeTextMobile')];
+                        const darkModeIconElements = [document.getElementById('darkModeIcon'), document.getElementById('darkModeIconMobile')];
+                        darkModeTextElements.forEach(el => {
+                            if (el) el.textContent = 'Light Mode';
+                        });
+                        darkModeIconElements.forEach(el => {
+                            if (el) el.innerHTML = '☀️';
+                        });
+                    } else {
+                         // Set initial button state for both desktop and mobile
+                        const darkModeTextElements = [document.getElementById('darkModeText'), document.getElementById('darkModeTextMobile')];
+                        const darkModeIconElements = [document.getElementById('darkModeIcon'), document.getElementById('darkModeIconMobile')];
+                        darkModeTextElements.forEach(el => {
+                            if (el) el.textContent = 'Dark Mode';
+                        });
+                        darkModeIconElements.forEach(el => {
+                            if (el) el.innerHTML = '💡';
+                        });
+                    }
+                },
+
+                async generateColourPalette() {
+                    const theme = document.getElementById('paletteTheme').value;
+                    const outputDiv = document.getElementById('paletteOutput');
+                    const swatchesDiv = document.getElementById('colorSwatches');
+                    const explanationP = document.getElementById('paletteExplanation');
+                    const spinner = document.getElementById('paletteSpinner');
+                    const button = document.getElementById('generatePaletteBtn');
+
+                    outputDiv.classList.add('hidden');
+                    swatchesDiv.innerHTML = '';
+                    explanationP.textContent = '';
+                    spinner.classList.remove('hidden');
+                    button.disabled = true;
+
+                    if (!theme) {
+                        explanationP.textContent = 'Please enter a theme.';
+                        outputDiv.classList.remove('hidden');
+                        spinner.classList.add('hidden');
+                        button.disabled = false;
+                        return;
+                    }
+
+                    try {
+                        let chatHistory = [];
+                        const prompt = `Generate a colour palette for a "${theme}" design that is highly accessible for individuals with colour blindness. Provide 5 HEX codes and a brief explanation of why it's colour-blind friendly, focusing on contrast and distinguishable hues. The response should be a JSON object with two properties: 'palette' (an array of objects, where each object has 'hex' (string) and 'name' (string, e.g., 'Primary Blue')), and 'explanation' (string).`;
+                        
+                        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                        const payload = {
+                            contents: chatHistory,
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "palette": {
+                                            type: "ARRAY",
+                                            items: {
+                                                type: "OBJECT",
+                                                properties: {
+                                                    "hex": { "type": "STRING" },
+                                                    "name": { "type": "STRING" }
+                                                },
+                                                "propertyOrdering": ["hex", "name"]
+                                            }
+                                        },
+                                        "explanation": { "type": "STRING" }
+                                    },
+                                    "propertyOrdering": ["palette", "explanation"]
+                                }
+                            }
+                        };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        const result = await response.json();
+
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const json = result.candidates[0].content.parts[0].text;
+                            const parsedJson = JSON.parse(json);
+
+                            if (parsedJson.palette && Array.isArray(parsedJson.palette)) {
+                                parsedJson.palette.forEach(color => {
+                                    const swatch = document.createElement('div');
+                                    swatch.className = 'w-10 h-10 rounded-full border border-stone-300';
+                                    swatch.style.backgroundColor = color.hex;
+                                    swatch.title = `${color.name} (${color.hex})`;
+                                    swatchesDiv.appendChild(swatch);
+                                });
+                            }
+                            explanationP.textContent = parsedJson.explanation || 'No explanation provided.';
+                            outputDiv.classList.remove('hidden');
+
+                        } else {
+                            explanationP.textContent = 'Could not generate palette. Please try again.';
+                            outputDiv.classList.remove('hidden');
+                        }
+                    } catch (error) {
+                        console.error('Error generating palette:', error);
+                        explanationP.textContent = 'An error occurred while generating the palette. Please try again later.';
+                        outputDiv.classList.remove('hidden');
+                    } finally {
+                        spinner.classList.add('hidden');
+                        button.disabled = false;
+                    }
+                },
+
+                async suggestAccessibilityImprovements() {
+                    const contentDesc = document.getElementById('contentDescription').value;
+                    const outputDiv = document.getElementById('suggestionsOutput');
+                    const suggestionTextP = document.getElementById('suggestionText');
+                    const spinner = document.getElementById('suggestionsSpinner');
+                    const button = document.getElementById('suggestAccessibilityBtn');
+
+                    outputDiv.classList.add('hidden');
+                    suggestionTextP.textContent = '';
+                    spinner.classList.remove('hidden');
+                    button.disabled = true;
+
+                    if (!contentDesc) {
+                        suggestionTextP.textContent = 'Please describe your content.';
+                        outputDiv.classList.remove('hidden');
+                        spinner.classList.add('hidden');
+                        button.disabled = false;
+                        return;
+                    }
+
+                    try {
+                        let chatHistory = [];
+                        const prompt = `Given the following content description: "${contentDesc}". Suggest specific graphic design improvements to make it more accessible for individuals with photophobia and/or colour blindness. Focus on practical visual design advice. Be concise and provide distinct, actionable points.`;
+                        
+                        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                        const payload = { contents: chatHistory };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        const result = await response.json();
+
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            suggestionTextP.textContent = result.candidates[0].content.parts[0].text;
+                            outputDiv.classList.remove('hidden');
+                        } else {
+                            suggestionTextP.textContent = 'Could not generate suggestions. Please try again.';
+                            outputDiv.classList.remove('hidden');
+                        }
+                    } catch (error) {
+                        console.error('Error generating suggestions:', error);
+                        suggestionTextP.textContent = 'An error occurred while generating suggestions. Please try again later.';
+                        outputDiv.classList.remove('hidden');
+                    } finally {
+                        spinner.classList.add('hidden');
+                        button.disabled = false;
+                    }
+                }
+            };
+            
+            App.init();
+        });
+    </script>
+</body>
+</html>
